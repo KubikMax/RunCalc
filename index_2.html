@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор темпа для бега</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #4a6fa5;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .results-section {
+            flex: 1.2;
+            min-width: 300px;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 1.5rem;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #4a6fa5;
+        }
+        
+        .input-hint {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .time-inputs {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .time-input-group {
+            flex: 1;
+        }
+        
+        .time-input-group label {
+            font-size: 0.9rem;
+            font-weight: normal;
+            margin-bottom: 5px;
+        }
+        
+        .calculate-btn {
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        .calculate-btn:hover {
+            background-color: #3a5985;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .result-item {
+            background-color: #f8f9fa;
+            padding: 18px;
+            border-radius: 8px;
+            border-left: 4px solid #4a6fa5;
+        }
+        
+        .result-item.speed {
+            border-left-color: #e74c3c;
+            background-color: #fff5f5;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+        
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4a6fa5;
+        }
+        
+        .result-item.speed .result-value {
+            color: #e74c3c;
+        }
+        
+        .result-unit {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-left: 5px;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            background-color: #fdf2f0;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .info-box {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 25px;
+            font-size: 0.9rem;
+        }
+        
+        .info-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            
+            .input-section, .results-section {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .time-inputs {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+        
+        .speed-explanation {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Калькулятор темпа для бега</h1>
+        <p class="subtitle">Рассчитайте темп, время, скорость и количество кругов на дистанции</p>
+    </header>
+    
+    <div class="container">
+        <section class="input-section">
+            <h2 class="section-title">Ввод данных</h2>
+            
+            <div class="input-group">
+                <label for="distance">Дистанция (км)</label>
+                <input type="number" id="distance" min="0.1" max="1000" step="0.1" value="5" placeholder="Введите расстояние от 0.1 до 1000 км">
+                <div class="input-hint">Введите расстояние от 0.1 до 1000 км</div>
+            </div>
+            
+            <div class="input-group">
+                <label for="calculation-type">Рассчитать на основе:</label>
+                <select id="calculation-type">
+                    <option value="total-time">Итогового времени</option>
+                    <option value="pace-1km">Темпа на 1 км</option>
+                    <option value="pace-400m">Темпа на 400 метров</option>
+                    <option value="pace-200m">Темпа на 200 метров</option>
+                    <option value="speed-kmh">Скорости (км/ч)</option>
+                </select>
+            </div>
+            
+            <div id="input-time" class="input-group">
+                <label for="hours">Итоговое время:</label>
+                <div class="time-inputs">
+                    <div class="time-input-group">
+                        <label for="hours">Часы</label>
+                        <input type="number" id="hours" min="0" max="100" value="0">
+                    </div>
+                    <div class="time-input-group">
+                        <label for="minutes">Минуты</label>
+                        <input type="number" id="minutes" min="0" max="59" value="25">
+                    </div>
+                    <div class="time-input-group">
+                        <label for="seconds">Секунды</label>
+                        <input type="number" id="seconds" min="0" max="59" value="0">
+                    </div>
+                </div>
+            </div>
+            
+            <div id="input-pace-1km" class="input-group" style="display: none;">
+                <label for="pace-1km-min">Темп на 1 км:</label>
+                <div class="time-inputs">
+                    <div class="time-input-group">
+                        <label for="pace-1km-min">Минуты</label>
+                        <input type="number" id="pace-1km-min" min="0" max="59" value="5">
+                    </div>
+                    <div class="time-input-group">
+                        <label for="pace-1km-sec">Секунды</label>
+                        <input type="number" id="pace-1km-sec" min="0" max="59" value="0">
+                    </div>
+                </div>
+            </div>
+            
+            <div id="input-pace-400m" class="input-group" style="display: none;">
+                <label for="pace-400m-min">Темп на 400 метров:</label>
+                <div class="time-inputs">
+                    <div class="time-input-group">
+                        <label for="pace-400m-min">Минуты</label>
+                        <input type="number" id="pace-400m-min" min="0" max="59" value="2">
+                    </div>
+                    <div class="time-input-group">
+                        <label for="pace-400m-sec">Секунды</label>
+                        <input type="number" id="pace-400m-sec" min="0" max="59" value="0">
+                    </div>
+                </div>
+            </div>
+            
+            <div id="input-pace-200m" class="input-group" style="display: none;">
+                <label for="pace-200m-min">Темп на 200 метров:</label>
+                <div class="time-inputs">
+                    <div class="time-input-group">
+                        <label for="pace-200m-min">Минуты</label>
+                        <input type="number" id="pace-200m-min" min="0" max="59" value="1">
+                    </div>
+                    <div class="time-input-group">
+                        <label for="pace-200m-sec">Секунды</label>
+                        <input type="number" id="pace-200m-sec" min="0" max="59" value="0">
+                    </div>
+                </div>
+            </div>
+            
+            <div id="input-speed-kmh" class="input-group" style="display: none;">
+                <label for="speed-kmh">Скорость (км/ч)</label>
+                <input type="number" id="speed-kmh" min="0.1" max="50" step="0.1" value="12" placeholder="Введите скорость в км/ч">
+                <div class="input-hint">Введите скорость от 0.1 до 50 км/ч</div>
+            </div>
+            
+            <button id="calculate-btn" class="calculate-btn">Рассчитать</button>
+            
+            <div id="error-message" class="error-message">
+                Ошибка: Проверьте введенные данные
+            </div>
+            
+            <div class="info-box">
+                <div class="info-title">Как пользоваться калькулятором:</div>
+                <p>1. Введите дистанцию в километрах (от 0.1 до 1000 км)</p>
+                <p>2. Выберите, на основе какого параметра выполнить расчет</p>
+                <p>3. Введите значение выбранного параметра</p>
+                <p>4. Нажмите "Рассчитать" для получения всех значений</p>
+            </div>
+        </section>
+        
+        <section class="results-section">
+            <h2 class="section-title">Результаты расчета</h2>
+            
+            <div class="results-grid">
+                <div class="result-item">
+                    <div class="result-label">Итоговое время на дистанции</div>
+                    <div class="result-value" id="result-total-time">00:00:00</div>
+                </div>
+                
+                <div class="result-item speed">
+                    <div class="result-label">Скорость</div>
+                    <div class="result-value" id="result-speed-kmh">0.0</div>
+                    <span class="result-unit">км/ч</span>
+                    <div class="speed-explanation" id="speed-description">Средняя скорость</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">Темп на 1 км</div>
+                    <div class="result-value" id="result-pace-1km">0:00</div>
+                    <span class="result-unit">мин/км</span>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">Темп на 400 метров</div>
+                    <div class="result-value" id="result-pace-400m">0:00</div>
+                    <span class="result-unit">мин/400м</span>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">Темп на 200 метров</div>
+                    <div class="result-value" id="result-pace-200m">0:00</div>
+                    <span class="result-unit">мин/200м</span>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">Кругов по манежу (400 м)</div>
+                    <div class="result-value" id="result-laps-400m">0</div>
+                    <span class="result-unit">кругов</span>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">Кругов по манежу (200 м)</div>
+                    <div class="result-value" id="result-laps-200m">0</div>
+                    <span class="result-unit">кругов</span>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-title">О расчетах:</div>
+                <p><strong>Темп</strong> - время, за которое вы пробегаете 1 километр.</p>
+                <p><strong>Скорость (км/ч)</strong> = 60 / (Темп на 1 км в минутах)</p>
+                <p><strong>Итоговое время</strong> = Темп на 1 км × Дистанция (в км)</p>
+                <p><strong>Круги по манежу</strong> = Дистанция (в метрах) / Длина круга</p>
+                <p>Расчеты округляются до двух знаков после запятой для кругов и скорости, до целых секунд для времени.</p>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <p>Калькулятор темпа для бега &copy; 2023 | Для дистанций от 0.1 до 1000 км</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Элементы интерфейса
+            const calculationType = document.getElementById('calculation-type');
+            const inputTime = document.getElementById('input-time');
+            const inputPace1km = document.getElementById('input-pace-1km');
+            const inputPace400m = document.getElementById('input-pace-400m');
+            const inputPace200m = document.getElementById('input-pace-200m');
+            const inputSpeedKmh = document.getElementById('input-speed-kmh');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const errorMessage = document.getElementById('error-message');
+            const speedDescription = document.getElementById('speed-description');
+            
+            // Элементы для ввода данных
+            const distanceInput = document.getElementById('distance');
+            const hoursInput = document.getElementById('hours');
+            const minutesInput = document.getElementById('minutes');
+            const secondsInput = document.getElementById('seconds');
+            const pace1kmMinInput = document.getElementById('pace-1km-min');
+            const pace1kmSecInput = document.getElementById('pace-1km-sec');
+            const pace400mMinInput = document.getElementById('pace-400m-min');
+            const pace400mSecInput = document.getElementById('pace-400m-sec');
+            const pace200mMinInput = document.getElementById('pace-200m-min');
+            const pace200mSecInput = document.getElementById('pace-200m-sec');
+            const speedKmhInput = document.getElementById('speed-kmh');
+            
+            // Элементы для вывода результатов
+            const resultTotalTime = document.getElementById('result-total-time');
+            const resultSpeedKmh = document.getElementById('result-speed-kmh');
+            const resultPace1km = document.getElementById('result-pace-1km');
+            const resultPace400m = document.getElementById('result-pace-400m');
+            const resultPace200m = document.getElementById('result-pace-200m');
+            const resultLaps400m = document.getElementById('result-laps-400m');
+            const resultLaps200m = document.getElementById('result-laps-200m');
+            
+            // Обработчик изменения типа расчета
+            calculationType.addEventListener('change', function() {
+                // Скрыть все поля ввода
+                inputTime.style.display = 'none';
+                inputPace1km.style.display = 'none';
+                inputPace400m.style.display = 'none';
+                inputPace200m.style.display = 'none';
+                inputSpeedKmh.style.display = 'none';
+                
+                // Показать нужное поле ввода
+                const selectedValue = calculationType.value;
+                if (selectedValue === 'total-time') {
+                    inputTime.style.display = 'block';
+                } else if (selectedValue === 'pace-1km') {
+                    inputPace1km.style.display = 'block';
+                } else if (selectedValue === 'pace-400m') {
+                    inputPace400m.style.display = 'block';
+                } else if (selectedValue === 'pace-200m') {
+                    inputPace200m.style.display = 'block';
+                } else if (selectedValue === 'speed-kmh') {
+                    inputSpeedKmh.style.display = 'block';
+                }
+                
+                // Выполнить расчет при изменении типа
+                calculatePace();
+            });
+            
+            // Обработчик нажатия кнопки расчета
+            calculateBtn.addEventListener('click', function() {
+                calculatePace();
+            });
+            
+            // Функция расчета темпа и времени
+            function calculatePace() {
+                // Сброс сообщения об ошибке
+                errorMessage.style.display = 'none';
+                
+                // Получение дистанции
+                const distance = parseFloat(distanceInput.value);
+                
+                // Проверка корректности дистанции
+                if (isNaN(distance) || distance < 0.1 || distance > 1000) {
+                    showError('Пожалуйста, введите корректную дистанцию от 0.1 до 1000 км');
+                    return;
+                }
+                
+                let totalSeconds = 0;
+                const selectedType = calculationType.value;
+                
+                try {
+                    // Расчет на основе выбранного типа ввода
+                    if (selectedType === 'total-time') {
+                        const hours = parseInt(hoursInput.value) || 0;
+                        const minutes = parseInt(minutesInput.value) || 0;
+                        const seconds = parseInt(secondsInput.value) || 0;
+                        
+                        if (hours < 0 || minutes < 0 || seconds < 0 || minutes >= 60 || seconds >= 60) {
+                            showError('Пожалуйста, введите корректное время (минуты и секунды от 0 до 59)');
+                            return;
+                        }
+                        
+                        totalSeconds = hours * 3600 + minutes * 60 + seconds;
+                        
+                        if (totalSeconds <= 0) {
+                            showError('Время должно быть больше 0');
+                            return;
+                        }
+                        
+                    } else if (selectedType === 'pace-1km') {
+                        const paceMin = parseInt(pace1kmMinInput.value) || 0;
+                        const paceSec = parseInt(pace1kmSecInput.value) || 0;
+                        
+                        if (paceMin < 0 || paceSec < 0 || paceSec >= 60) {
+                            showError('Пожалуйста, введите корректный темп (секунды от 0 до 59)');
+                            return;
+                        }
+                        
+                        const paceSeconds = paceMin * 60 + paceSec;
+                        
+                        if (paceSeconds <= 0) {
+                            showError('Темп должен быть больше 0');
+                            return;
+                        }
+                        
+                        totalSeconds = paceSeconds * distance;
+                        
+                    } else if (selectedType === 'pace-400m') {
+                        const paceMin = parseInt(pace400mMinInput.value) || 0;
+                        const paceSec = parseInt(pace400mSecInput.value) || 0;
+                        
+                        if (paceMin < 0 || paceSec < 0 || paceSec >= 60) {
+                            showError('Пожалуйста, введите корректный темп (секунды от 0 до 59)');
+                            return;
+                        }
+                        
+                        const paceSeconds = paceMin * 60 + paceSec;
+                        
+                        if (paceSeconds <= 0) {
+                            showError('Темп должен быть больше 0');
+                            return;
+                        }
+                        
+                        // Темп на 400м -> Темп на 1км (умножить на 2.5)
+                        const pace1kmSeconds = paceSeconds * 2.5;
+                        totalSeconds = pace1kmSeconds * distance;
+                        
+                    } else if (selectedType === 'pace-200m') {
+                        const paceMin = parseInt(pace200mMinInput.value) || 0;
+                        const paceSec = parseInt(pace200mSecInput.value) || 0;
+                        
+                        if (paceMin < 0 || paceSec < 0 || paceSec >= 60) {
+                            showError('Пожалуйста, введите корректный темп (секунды от 0 до 59)');
+                            return;
+                        }
+                        
+                        const paceSeconds = paceMin * 60 + paceSec;
+                        
+                        if (paceSeconds <= 0) {
+                            showError('Темп должен быть больше 0');
+                            return;
+                        }
+                        
+                        // Темп на 200м -> Темп на 1км (умножить на 5)
+                        const pace1kmSeconds = paceSeconds * 5;
+                        totalSeconds = pace1kmSeconds * distance;
+                        
+                    } else if (selectedType === 'speed-kmh') {
+                        const speedKmh = parseFloat(speedKmhInput.value);
+                        
+                        if (isNaN(speedKmh) || speedKmh <= 0 || speedKmh > 50) {
+                            showError('Пожалуйста, введите корректную скорость от 0.1 до 50 км/ч');
+                            return;
+                        }
+                        
+                        // Скорость в км/ч -> время на 1 км в секундах
+                        // скорость = расстояние / время => время = расстояние / скорость
+                        // время на 1 км в часах = 1 / скорость_кмч
+                        // время в секундах = (1 / скорость_кмч) * 3600
+                        const pace1kmSeconds = (1 / speedKmh) * 3600;
+                        totalSeconds = pace1kmSeconds * distance;
+                    }
+                    
+                    // Расчет всех значений
+                    const pace1kmSeconds = totalSeconds / distance;
+                    const pace400mSeconds = pace1kmSeconds / 2.5;
+                    const pace200mSeconds = pace1kmSeconds / 5;
+                    const speedKmh = 3600 / pace1kmSeconds; // км/ч
+                    
+                    // Расчет количества кругов
+                    const distanceMeters = distance * 1000;
+                    const laps400m = distanceMeters / 400;
+                    const laps200m = distanceMeters / 200;
+                    
+                    // Обновление описания скорости
+                    updateSpeedDescription(speedKmh);
+                    
+                    // Отображение результатов
+                    displayResult(totalSeconds, speedKmh, pace1kmSeconds, pace400mSeconds, pace200mSeconds, laps400m, laps200m);
+                    
+                } catch (error) {
+                    showError('Произошла ошибка при расчете. Проверьте введенные данные.');
+                    console.error(error);
+                }
+            }
+            
+            // Функция обновления описания скорости
+            function updateSpeedDescription(speedKmh) {
+                let description = "Средняя скорость";
+                
+                if (speedKmh < 5) {
+                    description = "Очень медленная ходьба";
+                } else if (speedKmh < 7) {
+                    description = "Быстрая ходьба";
+                } else if (speedKmh < 10) {
+                    description = "Бег трусцой";
+                } else if (speedKmh < 12) {
+                    description = "Легкий бег";
+                } else if (speedKmh < 14) {
+                    description = "Средний темп";
+                } else if (speedKmh < 16) {
+                    description = "Быстрый бег";
+                } else if (speedKmh < 20) {
+                    description = "Очень быстрый бег";
+                } else if (speedKmh < 25) {
+                    description = "Спринтерская скорость";
+                } else {
+                    description = "Элитная скорость";
+                }
+                
+                speedDescription.textContent = description;
+            }
+            
+            // Функция отображения результатов
+            function displayResult(totalSeconds, speedKmh, pace1kmSeconds, pace400mSeconds, pace200mSeconds, laps400m, laps200m) {
+                // Форматирование времени для итогового времени
+                const totalHours = Math.floor(totalSeconds / 3600);
+                const totalMinutes = Math.floor((totalSeconds % 3600) / 60);
+                const totalSecs = Math.round(totalSeconds % 60);
+                
+                resultTotalTime.textContent = 
+                    `${totalHours.toString().padStart(2, '0')}:${totalMinutes.toString().padStart(2, '0')}:${totalSecs.toString().padStart(2, '0')}`;
+                
+                // Отображение скорости
+                resultSpeedKmh.textContent = speedKmh.toFixed(1);
+                
+                // Форматирование темпа на 1 км
+                const pace1kmMinutes = Math.floor(pace1kmSeconds / 60);
+                const pace1kmSecs = Math.round(pace1kmSeconds % 60);
+                resultPace1km.textContent = `${pace1kmMinutes}:${pace1kmSecs.toString().padStart(2, '0')}`;
+                
+                // Форматирование темпа на 400 м
+                const pace400mMinutes = Math.floor(pace400mSeconds / 60);
+                const pace400mSecs = Math.round(pace400mSeconds % 60);
+                resultPace400m.textContent = `${pace400mMinutes}:${pace400mSecs.toString().padStart(2, '0')}`;
+                
+                // Форматирование темпа на 200 м
+                const pace200mMinutes = Math.floor(pace200mSeconds / 60);
+                const pace200mSecs = Math.round(pace200mSeconds % 60);
+                resultPace200m.textContent = `${pace200mMinutes}:${pace200mSecs.toString().padStart(2, '0')}`;
+                
+                // Отображение количества кругов
+                resultLaps400m.textContent = laps400m.toFixed(2);
+                resultLaps200m.textContent = laps200m.toFixed(2);
+            }
+            
+            // Функция отображения ошибки
+            function showError(message) {
+                errorMessage.textContent = `Ошибка: ${message}`;
+                errorMessage.style.display = 'block';
+            }
+            
+            // Автоматический расчет при изменении значений
+            const allInputs = document.querySelectorAll('input, select');
+            allInputs.forEach(input => {
+                input.addEventListener('input', calculatePace);
+            });
+            
+            // Выполнить первоначальный расчет
+            calculatePace();
+        });
+    </script>
+</body>
+</html>
